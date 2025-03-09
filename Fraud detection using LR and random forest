@@ -1,0 +1,43 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
+import matplotlib.pyplot as plt
+import seaborn as sns
+data = pd.read_csv(r'C:\Users\kavirithanya\Documents\one drive\OneDrive\Desktop\creditcard.csv')
+print(data.head())
+print(data.isnull().sum())
+data.fillna(0, inplace=True)
+X = data.iloc[:, :-1]
+y = data.iloc[:, -1]   
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+scaler = StandardScaler()
+X_train = scaler.fit_transform(X_train)
+X_test = scaler.transform(X_test)
+logistic_model = LogisticRegression()
+logistic_model.fit(X_train, y_train)
+y_pred_logistic = logistic_model.predict(X_test)
+print("Logistic Regression Results:")
+print("Accuracy:", accuracy_score(y_test, y_pred_logistic))
+print(classification_report(y_test, y_pred_logistic))
+plt.figure(figsize=(8, 6))
+sns.heatmap(confusion_matrix(y_test, y_pred_logistic), annot=True, fmt='d', cmap='Blues')
+plt.title('Logistic Regression Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
+random_forest_model = RandomForestClassifier(n_estimators=100, random_state=42)
+random_forest_model.fit(X_train, y_train)
+y_pred_forest = random_forest_model.predict(X_test)
+print("Random Forest Results:")
+print("Accuracy:", accuracy_score(y_test, y_pred_forest))
+print(classification_report(y_test, y_pred_forest))
+plt.figure(figsize=(8, 6))
+sns.heatmap(confusion_matrix(y_test, y_pred_forest), annot=True, fmt='d', cmap='Greens')
+plt.title('Random Forest Confusion Matrix')
+plt.xlabel('Predicted')
+plt.ylabel('Actual')
+plt.show()
